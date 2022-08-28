@@ -16,7 +16,8 @@
     "incremental": true,
     "baseUrl": "src", // This must be specified if "paths" is.
     "paths": {
-      "components/*": ["components/*"]
+      "components/*": ["components/*"],
+      "test-utils": ["./utils/test-utils"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

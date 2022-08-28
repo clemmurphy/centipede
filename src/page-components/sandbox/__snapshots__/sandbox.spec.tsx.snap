@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Sandbox page should render 1`] = `
+<body>
+  <div>
+    <div
+      class="sandbox-layout__CenterEverythingDiv-sc-1j7nf6l-0 erNWbK"
+    >
+      <div>
+        <h1>
+          Sandbox
+        </h1>
+        <p>
+          This is a sandbox page. You can use it to experiment with new components and features.
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+`;
