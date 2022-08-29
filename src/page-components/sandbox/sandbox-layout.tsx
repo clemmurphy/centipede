@@ -1,4 +1,6 @@
 import styled from 'styled-components'
+import { useDrag, useDrop } from 'react-dnd'
+import { DraggableItemTypes } from 'constants/constants'
 
 const CenterEverythingDiv = styled.div`
   display: flex;
@@ -11,13 +13,46 @@ const CenterEverythingDiv = styled.div`
 export function SandboxLayout() {
   return (
     <CenterEverythingDiv>
-      <div>
-        <h1>Sandbox</h1>
-        <p>
-          This is a sandbox page. You can use it to experiment with new
-          components and features.
-        </p>
-      </div>
+      <DraggableComponent />
+      <DroppableComponent />
     </CenterEverythingDiv>
+  )
+}
+
+function DraggableComponent() {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: DraggableItemTypes.CARD,
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  }))
+
+  return (
+    <div
+      ref={drag}
+      style={{
+        opacity: isDragging ? 0.5 : 1,
+        fontSize: 25,
+        fontWeight: 'bold',
+        cursor: 'move',
+      }}
+    >
+      <p>DRAG THIS</p>
+    </div>
+  )
+}
+
+function DroppableComponent() {
+  const [collectedProps, drop] = useDrop(() => ({
+    accept: DraggableItemTypes.CARD,
+  }))
+
+  return (
+    <div
+      style={{ height: 100, width: 100, backgroundColor: 'rebeccapurple' }}
+      ref={drop}
+    >
+      Drop Target
+    </div>
   )
 }
