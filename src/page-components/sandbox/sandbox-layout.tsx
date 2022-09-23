@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { useDrag, useDrop } from 'react-dnd'
 import { DraggableItemTypes } from 'constants/constants'
-import { useState } from 'react'
+import { ReactElement, ReactNode, useState } from 'react'
 
 const CenterEverythingDiv = styled.div`
   display: flex;
@@ -12,7 +12,28 @@ const CenterEverythingDiv = styled.div`
   width: 100vw;
 `
 
+const ValueElement = styled.p`
+  background-color: white;
+  color: black;
+`
+let itemList: { id: number; item: ReactElement }[] = []
+
 export function SandboxLayout() {
+  const [nextItemId, setNextItemId] = useState(0)
+
+  function addItemToList(item: ReactElement) {
+    itemList.push({
+      id: nextItemId,
+      item: DeletableComponent({ id: nextItemId, children: item }),
+    })
+    setNextItemId(nextItemId + 1)
+  }
+
+  function removeItemFromList(id: number) {
+    const itemToDeleteIndex = itemList.findIndex((item) => item.id === id)
+    itemList = itemList.splice(itemToDeleteIndex, 1)
+  }
+
   return (
     <CenterEverythingDiv>
       <DraggableComponent />
@@ -22,10 +43,25 @@ export function SandboxLayout() {
   )
 }
 
+function DeletableComponent({
+  id,
+  children,
+}: {
+  id: number
+  children: ReactNode
+}) {
+  return (
+    <div>
+      <button onClick={() => removeItemFromList(id)}>Delete</button>
+      {children}
+    </div>
+  )
+}
+
 function DraggableComponent() {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: DraggableItemTypes.CARD,
-    item: { value: 2 },
+    item: { value: <ValueElement>Element one</ValueElement> },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
@@ -57,7 +93,7 @@ function DraggableComponent() {
 function DraggableComponent2() {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: DraggableItemTypes.CARD,
-    item: { value: -1 },
+    item: { value: <ValueElement>Element 2</ValueElement> },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
@@ -86,14 +122,12 @@ function DraggableComponent2() {
   )
 }
 
-let dropCount = 0
-
 function DroppableComponent() {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: DraggableItemTypes.CARD,
     drop: (props: any, monitor: any) => {
       const item = monitor.getItem()
-      dropCount = dropCount + item.value
+      addItemToList(item.value)
     },
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
@@ -106,17 +140,20 @@ function DroppableComponent() {
   return (
     <div
       style={{
-        height: 200,
+        minHeight: 200,
         width: 200,
         backgroundColor: color,
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         fontSize: 32,
       }}
       ref={drop}
     >
-      <p>{dropCount}</p>
+      {itemList.map((item) => {
+        return item.item
+      })}
     </div>
   )
 }
